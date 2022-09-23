@@ -174,6 +174,7 @@ export class AdminControlCharts implements IAdminControlCharts {
 
             //Position tooltip container
             _this.interactions.tooltip.positionTooltipContainer(chart, xTooltip(d.group, tooltipBox), yTooltip(d.getStat("usersTotal").value as number, tooltipBox));
+
             function xTooltip(x: string, tooltipBox: d3.Selection<SVGRectElement, unknown, HTMLElement, any>) {
                 //Position tooltip right of the box
                 let xTooltip = chart.x.scale(x) + chart.x.scale.bandwidth();
@@ -187,12 +188,18 @@ export class AdminControlCharts implements IAdminControlCharts {
             }
             function yTooltip(y: number, tooltipBox: d3.Selection<SVGRectElement, unknown, HTMLElement, any>) {
                 //Position tooltip on top of the box
-                let yTooltip = chart.y.scale(y) + (tooltipBox.node().getBBox().height / 2);
+                let yTooltip = chart.y.scale(y) + (tooltipBox.node().getBBox().height / 2 );
 
                 //If tooltip does not fit position at the same height as the box
                 if (chart.y.scale.invert(yTooltip) < 0) {
                     return chart.y.scale(y + chart.y.scale.invert(yTooltip));
                 }
+
+                //If chart is shorter than the tooltip height
+                else if (chart.y.scale.invert(yTooltip + tooltipBox.node().getBBox().height) < 0){
+                    return chart.y.scale.invert(y) + tooltipBox.node().getBBox().height * 2;
+                }
+                
                 return yTooltip;
             }
         }
